@@ -12,7 +12,18 @@ import java.util.Map;
 
 public class App extends GameApplication {
 
-    private Entity player;
+    private Entity appleCard;
+    private Entity bananaCard;
+    private Entity bearCard;
+    private Entity catCard;
+    private Entity elephantCard;
+    private Entity frogCard;
+    private Entity lemonCard;
+    private Entity pearCard;
+    private Entity pigCard;
+    private Entity rabbitCard;
+    private Entity strawberryCard;
+    private Entity watermelonCard;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -25,22 +36,22 @@ public class App extends GameApplication {
     @Override
     protected void initInput() {
         FXGL.onKey(KeyCode.D, () -> {
-            player.translateX(5); // move right 5 pixels
+            rabbitCard.translateX(5); // move right 5 pixels
             FXGL.inc("pixelsMoved", +5);
         });
 
         FXGL.onKey(KeyCode.A, () -> {
-            player.translateX(-5); // move left 5 pixels
+            rabbitCard.translateX(-5); // move left 5 pixels
             FXGL.inc("pixelsMoved", -5);
         });
 
         FXGL.onKey(KeyCode.W, () -> {
-            player.translateY(-5); // move up 5 pixels
+            rabbitCard.translateY(-5); // move up 5 pixels
             FXGL.inc("pixelsMoved", +5);
         });
 
         FXGL.onKey(KeyCode.S, () -> {
-            player.translateY(5); // move down 5 pixels
+            rabbitCard.translateY(5); // move down 5 pixels
             FXGL.inc("pixelsMoved", +5);
         });
     }
@@ -53,7 +64,18 @@ public class App extends GameApplication {
     @Override
     protected void initGame() {
         FXGL.getGameWorld().addEntityFactory(new MemoryGameEntityFactory());
-        player = FXGL.spawn("player", 300, 300);
+        appleCard = FXGL.spawn("apple", 0, 0);
+        bananaCard = FXGL.spawn("banana", 173, 0);
+        bearCard = FXGL.spawn("bear", 346, 0);
+        catCard = FXGL.spawn("cat", 519, 0);
+        elephantCard = FXGL.spawn("elephant", 0, 173);
+        frogCard = FXGL.spawn("frog", 173, 173);
+        lemonCard = FXGL.spawn("lemon", 346, 173);
+        pearCard = FXGL.spawn("pear", 519, 173);
+        pigCard = FXGL.spawn("pig", 0, 346);
+        rabbitCard = FXGL.spawn("rabbit", 173, 346);
+        strawberryCard = FXGL.spawn("strawberry", 346, 346);
+        watermelonCard = FXGL.spawn("watermelon", 519, 346);
     }
 
     @Override
