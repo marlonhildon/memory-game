@@ -1,59 +1,41 @@
 package br.com.marlonhildon;
 
-import br.com.marlonhildon.entities.MemoryGameEntityFactory;
+import br.com.marlonhildon.behaviours.CardBehaviour;
+import br.com.marlonhildon.constants.MemoryGameType;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
 
-import java.util.Map;
+import java.util.*;
 
 public class App extends GameApplication {
 
-    private Entity appleCard;
-    private Entity bananaCard;
-    private Entity bearCard;
-    private Entity catCard;
-    private Entity elephantCard;
-    private Entity frogCard;
-    private Entity lemonCard;
-    private Entity pearCard;
-    private Entity pigCard;
-    private Entity rabbitCard;
-    private Entity strawberryCard;
-    private Entity watermelonCard;
+    private final int SCREEN_WIDTH = 800;
+    private final int SCREEN_HEIGHT = 600;
+    private final CardBehaviour CARD_BEHAVIOUR = new CardBehaviour();
+    private final int MAX_UNIQUE_CARDS = 6;
+    private final int CARD_SIZE_PIXELS = 173;
+    private Entity firstCardClicked;
+    private Entity secondCardClicked;
 
     @Override
     protected void initSettings(GameSettings settings) {
-        settings.setWidth(800);
-        settings.setHeight(600);
+        settings.setWidth(SCREEN_WIDTH);
+        settings.setHeight(SCREEN_HEIGHT);
         settings.setTitle("Memory Game");
         settings.setVersion("0.1-ALPHA");
     }
 
     @Override
     protected void initInput() {
-        FXGL.onKey(KeyCode.D, () -> {
-            rabbitCard.translateX(5); // move right 5 pixels
-            FXGL.inc("pixelsMoved", +5);
-        });
 
-        FXGL.onKey(KeyCode.A, () -> {
-            rabbitCard.translateX(-5); // move left 5 pixels
-            FXGL.inc("pixelsMoved", -5);
-        });
+    }
 
-        FXGL.onKey(KeyCode.W, () -> {
-            rabbitCard.translateY(-5); // move up 5 pixels
-            FXGL.inc("pixelsMoved", +5);
-        });
-
-        FXGL.onKey(KeyCode.S, () -> {
-            rabbitCard.translateY(5); // move down 5 pixels
-            FXGL.inc("pixelsMoved", +5);
-        });
+    @Override
+    protected void onUpdate(double tpf) {
+        CARD_BEHAVIOUR.destroyCards();
     }
 
     @Override
@@ -63,19 +45,35 @@ public class App extends GameApplication {
 
     @Override
     protected void initGame() {
-        FXGL.getGameWorld().addEntityFactory(new MemoryGameEntityFactory());
-        appleCard = FXGL.spawn("apple", 0, 0);
-        bananaCard = FXGL.spawn("banana", 173, 0);
-        bearCard = FXGL.spawn("bear", 346, 0);
-        catCard = FXGL.spawn("cat", 519, 0);
-        elephantCard = FXGL.spawn("elephant", 0, 173);
-        frogCard = FXGL.spawn("frog", 173, 173);
-        lemonCard = FXGL.spawn("lemon", 346, 173);
-        pearCard = FXGL.spawn("pear", 519, 173);
-        pigCard = FXGL.spawn("pig", 0, 346);
-        rabbitCard = FXGL.spawn("rabbit", 173, 346);
-        strawberryCard = FXGL.spawn("strawberry", 346, 346);
-        watermelonCard = FXGL.spawn("watermelon", 519, 346);
+        List<MemoryGameType> cardTypes = new ArrayList<>(Arrays.asList(MemoryGameType.values()));
+        List<Entity> cardsToRender = new ArrayList<>();
+        Random rand = new Random();
+
+        //Picks 6 unique cards
+        for(int i = 0; i< MAX_UNIQUE_CARDS; i++) {
+            MemoryGameType cardType = cardTypes.get(rand.nextInt(cardTypes.size()));
+            cardsToRender.add(CARD_BEHAVIOUR.buildEntityByType(cardType));
+            cardsToRender.add(CARD_BEHAVIOUR.buildEntityByType(cardType));
+            cardTypes.remove(cardType);
+        }
+
+        //Sorts the card list and spawns it
+        int xRenderCoordinate = 0, yRenderCoordinate = 0;
+        Collections.shuffle(cardsToRender, rand);
+        Collections.shuffle(cardsToRender, rand);
+
+        for(Entity cardEntity : cardsToRender) {
+            cardEntity.setAnchoredPosition(xRenderCoordinate,yRenderCoordinate);
+            xRenderCoordinate += CARD_SIZE_PIXELS;
+
+            if((xRenderCoordinate + CARD_SIZE_PIXELS) > SCREEN_WIDTH) {
+                xRenderCoordinate = 0;
+                yRenderCoordinate += CARD_SIZE_PIXELS;
+            }
+
+            FXGL.getGameWorld().addEntities(cardEntity);
+        }
+
     }
 
     @Override
